@@ -1,4 +1,4 @@
-WALL, PLAYER, PLAYER_ON_GOAL, BOX, BOX_ON_GOAL, GOAL, FLOOR = '#', '@', '+', '$', '*', '.', ' '
+import gameConstants
 
 class MazeParser:
     def __init__(self):
@@ -9,7 +9,7 @@ class MazeParser:
         res = ''
         line = file.readline()
         while line:
-            if (line == "" or line[0] not in [WALL, PLAYER, PLAYER_ON_GOAL, BOX, BOX_ON_GOAL, GOAL, FLOOR]):
+            if (line == "" or line[0] not in gameConstants.COMPONENTS):
                 break
             res += line
             line = file.readline()
