@@ -11,30 +11,28 @@ class MainWindow(arcade.Window):
         self.agent = agent
 
     def setup(self):
+        self.initSprites()
+            
+
+    def initSprites(self):
         self.walls = arcade.SpriteList()
         self.goals = arcade.SpriteList()
         self.boxes = arcade.SpriteList()
         for state in self.agent.environment.states:
             if self.agent.environment.states[state] == gameConstants.WALL:
-                sprite = arcade.Sprite(":resources:images/tiles/grassCenter.png", 0.5)
-                sprite.center_x = state[1] * sprite.width + sprite.width * 0.5
-                sprite.center_y = self.height - (state[0] * sprite.width + sprite.width * 0.5)
-                self.walls.append(sprite)
+                self.walls.append(self.generateSprite(state, ":resources:images/tiles/grassCenter.png"))
             elif self.agent.environment.states[state] == gameConstants.BOX:
-                sprite = arcade.Sprite(':resources:images/tiles/boxCrate_single.png', 0.5)
-                sprite.center_x = state[1] * sprite.width + sprite.width * 0.5
-                sprite.center_y = self.height - (state[0] * sprite.width + sprite.width * 0.5)
-                self.boxes.append(sprite)
+                self.boxes.append(self.generateSprite(state, ':resources:images/tiles/boxCrate_single.png'))
             elif self.agent.environment.states[state] == gameConstants.GOAL:
-                sprite = arcade.Sprite(':resources:images/items/coinGold_lr.png', 0.5)
-                sprite.center_x = state[1] * sprite.width + sprite.width * 0.5
-                sprite.center_y = self.height - (state[0] * sprite.width + sprite.width * 0.5)
-                self.goals.append(sprite)
-            
-            self.player = arcade.Sprite(":resources:images/enemies/frog.png", 0.5)
-        self.player.center_x = self.agent.state[1] * self.player.width + self.player.width * 0.5
-        self.player.center_y = self.height - (self.agent.state[0] * self.player.width + self.player.height * 0.5)
+                self.goals.append(self.generateSprite(state, ':resources:images/items/coinGold_lr.png'))
+                
+        self.player = self.generateSprite(self.agent.state, ":resources:images/enemies/frog.png")
 
+    def generateSprite(self, position, spriteUrl):
+        sprite = arcade.Sprite(spriteUrl, 0.5)
+        sprite.center_x = position[1] * sprite.width + sprite.width * 0.5
+        sprite.center_y = self.height - (position[0] * sprite.width + sprite.width * 0.5)
+        return sprite
 
     def on_draw(self):
         arcade.start_render()
