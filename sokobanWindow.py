@@ -26,7 +26,7 @@ class MainWindow(arcade.Window):
             elif self.agent.environment.states[state] == gameConstants.GOAL:
                 self.goals.append(self.generateSprite(state, ':resources:images/items/coinGold_lr.png'))
                 
-        self.player = self.generateSprite(self.agent.state, ":resources:images/enemies/frog.png")
+        self.update_player()
 
     def generateSprite(self, position, spriteUrl):
         sprite = arcade.Sprite(spriteUrl, 0.5)
@@ -34,12 +34,20 @@ class MainWindow(arcade.Window):
         sprite.center_y = self.height - (position[0] * sprite.width + sprite.width * 0.5)
         return sprite
 
+    def update_player(self):
+        self.player = self.generateSprite(self.agent.state, ":resources:images/enemies/frog.png")
+
     def on_draw(self):
         arcade.start_render()
         self.walls.draw()
         self.goals.draw()
         self.boxes.draw()
         self.player.draw()
+        
+    def on_update(self, delta_time):
+        action = self.agent.best_action()
+        self.agent.do(action)
+        self.update_player()
 
     
     def run(self):
