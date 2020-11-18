@@ -14,7 +14,9 @@ class Agent:
         self.score = 0
 
     def best_action(self):
-        return self.policy.best_action(self.state)
+        availableActions = self.environment.availableActions(self.state)
+        print(availableActions)
+        return self.policy.best_action(self.state, availableActions)
 
     def do(self, action):
         self.previous_state = self.state

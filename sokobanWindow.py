@@ -46,8 +46,9 @@ class MainWindow(arcade.Window):
         
     def on_update(self, delta_time):
         action = self.agent.best_action()
-        self.agent.do(action)
-        self.update_player()
+        if action != None :
+            self.agent.do(action)
+            self.update_player()
 
     
     def run(self):

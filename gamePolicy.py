@@ -22,10 +22,10 @@ class Policy:
             for a in actions:
                 self.table[s][a] = 0
 
-    def best_action(self, state):
+    def best_action(self, state, availableActions):
         action = None
         for a in self.table[state]:
-            if not action or self.table[state][a] > self.table[state][action]:
+            if a in availableActions and (not action or self.table[state][a] > self.table[state][action]):
                 action = a
         return action
 
