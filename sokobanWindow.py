@@ -38,6 +38,7 @@ class MainWindow(arcade.Window):
         self.player = self.generateSprite(self.agent.state, ":resources:images/enemies/frog.png")
 
     def on_draw(self):
+        self.initSprites()
         arcade.start_render()
         self.walls.draw()
         self.goals.draw()
