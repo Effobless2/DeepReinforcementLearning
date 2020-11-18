@@ -12,7 +12,11 @@ class MainWindow(arcade.Window):
 
     def setup(self):
         self.initSprites()
-            
+
+    def reset(self):
+        self.agent.environment.reset()
+        self.agent.reset()
+        self.update_player()  
 
     def initSprites(self):
         self.walls = arcade.SpriteList()
@@ -23,6 +27,8 @@ class MainWindow(arcade.Window):
                 self.walls.append(self.generateSprite(state, ":resources:images/tiles/grassCenter.png"))
             elif self.agent.environment.states[state] == gameConstants.BOX:
                 self.boxes.append(self.generateSprite(state, ':resources:images/tiles/boxCrate_single.png'))
+            elif self.agent.environment.states[state] == gameConstants.BOX_ON_GOAL:
+                self.boxes.append(self.generateSprite(state, ':resources:images/items/coinBronze.png'))
             elif self.agent.environment.states[state] == gameConstants.GOAL:
                 self.goals.append(self.generateSprite(state, ':resources:images/items/coinGold_lr.png'))
                 
@@ -44,6 +50,10 @@ class MainWindow(arcade.Window):
         self.goals.draw()
         self.boxes.draw()
         self.player.draw()
+
+    def on_key_release(self, key, modifiers):
+        if key == arcade.key.C:
+            self.reset()
         
     def on_update(self, delta_time):
         action = self.agent.best_action()

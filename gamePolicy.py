@@ -3,11 +3,11 @@ import gameConstants
 DEFAULT_LEARNING_RATE, DEFAULT_DISCOUNT_FACTOR = 1, 0.1
 
 REWARDS = {
-    gameConstants.WALL           : -10000,
-    gameConstants.PLAYER         : -100000,
-    gameConstants.PLAYER_ON_GOAL : -1000,
-    gameConstants.BOX            : -100,
-    gameConstants.BOX_ON_GOAL    : -1000,
+    gameConstants.WALL           : -100000,
+    gameConstants.PLAYER         : -5,
+    gameConstants.PLAYER_ON_GOAL : -5,
+    gameConstants.BOX            : -5,
+    gameConstants.BOX_ON_GOAL    : -10,
     gameConstants.GOAL           : -5,
     gameConstants.FLOOR          : -5    
 }

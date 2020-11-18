@@ -3,10 +3,13 @@ import gameConstants
 
 class Environment:
     def __init__(self, template):
-        self.states = {}
         self.template = template.strip().split('\n')
+        self.reset()
+
+    def reset(self):
+        self.states = {}
         self.starting_point = (0,0)
-        lines = template.strip().split('\n')
+        lines = self.template
         for row in range(len(lines)):
             for col in range(len(lines[row])):
                 self.states[(row, col)] = lines[row][col]
@@ -86,23 +89,18 @@ class Environment:
     def apply(self, state, action):
         if action == gameConstants.UP:
             new_state = (state[0] - 1, state[1])
-            if self.states[new_state] == gameConstants.BOX or self.states[new_state] == gameConstants.BOX_ON_GOAL:
-                self.moveBlock(action, new_state)
 
         elif action == gameConstants.DOWN:
             new_state = (state[0] + 1, state[1])
-            if self.states[new_state] == gameConstants.BOX or self.states[new_state] == gameConstants.BOX_ON_GOAL:
-                self.moveBlock(action, new_state)
 
         elif action == gameConstants.LEFT:
             new_state = (state[0], state[1] - 1)
-            if self.states[new_state] == gameConstants.BOX or self.states[new_state] == gameConstants.BOX_ON_GOAL:
-                self.moveBlock(action, new_state)
 
         elif action == gameConstants.RIGHT:
             new_state = (state[0], state[1] + 1)
-            if self.states[new_state] == gameConstants.BOX or self.states[new_state] == gameConstants.BOX_ON_GOAL:
-                self.moveBlock(action, new_state)
+
+        if self.states[new_state] in [gameConstants.BOX, gameConstants.BOX_ON_GOAL]:
+            self.moveBlock(action, new_state)
                 
         if new_state in self.states:
             state = new_state
@@ -117,13 +115,7 @@ class Environment:
             self.states[(blockPos[0], blockPos[1]-1)] = gameConstants.BOX
         elif action == gameConstants.RIGHT:
             self.states[(blockPos[0], blockPos[1]+1)] = gameConstants.BOX
-
         if self.states[blockPos] == gameConstants.BOX_ON_GOAL:
             self.states[blockPos] = gameConstants.GOAL
         else:
             self.states[blockPos] = gameConstants.FLOOR
-            
-
-
-
-            # self.states[(row, col)] = lines[row][col]
