@@ -15,7 +15,6 @@ class Agent:
 
     def best_action(self):
         availableActions = self.environment.availableActions(self.state)
-        print(availableActions)
         return self.policy.best_action(self.state, availableActions)
 
     def do(self, action):
