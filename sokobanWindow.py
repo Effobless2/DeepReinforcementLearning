@@ -9,11 +9,13 @@ class MainWindow(arcade.Window):
                         SPRITE_SIZE * height,
                         "Pousse la caisse !")
         self.agent = agent
+        self.reset()
 
     def setup(self):
         self.initSprites()
 
     def reset(self):
+        self.started = False
         self.agent.environment.reset()
         self.agent.reset()
         self.update_player()  
@@ -56,10 +58,19 @@ class MainWindow(arcade.Window):
             self.reset()
         
     def on_update(self, delta_time):
+        if not self.started:
+            self.started = True
+            return
+        input()
         action = self.agent.best_action()
         if action != None :
             self.agent.do(action)
             self.update_player()
+        if self.agent.environment.lose():
+            self.reset()
+        elif self.agent.environment.win():
+            print("won")
+            self.reset()
 
     
     def run(self):

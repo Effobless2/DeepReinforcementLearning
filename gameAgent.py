@@ -8,6 +8,7 @@ class Agent:
         self.reset()
         
     def reset(self):
+        self.actionNumber = 0
         self.state = self.environment.starting_point
         self.previous_state = self.state
         self.last_action = None
@@ -15,13 +16,15 @@ class Agent:
 
     def best_action(self):
         availableActions = self.environment.availableActions(self.state)
-        return self.policy.best_action(self.state, availableActions)
+        return self.policy.best_action(self.state, availableActions, self.environment)
 
     def do(self, action):
+        self.actionNumber += 1
+        print("Tour: {0}", self.actionNumber)
         self.previous_state = self.state
-        self.state, cellContent = self.environment.apply(self.state, action)
+        self.state, blockHasMoved = self.environment.apply(self.state, action)
         self.last_action = action
-        self.update_policy(cellContent)
+        self.update_policy(blockHasMoved)
 
-    def update_policy(self, cellContent):
-        self.policy.update(self.previous_state, self.state, self.last_action, cellContent)
+    def update_policy(self, blockHasMoved):
+        self.policy.update(self.previous_state, self.state, self.last_action, self.environment, blockHasMoved)
