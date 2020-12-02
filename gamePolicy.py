@@ -52,7 +52,7 @@ class Policy:
             reward += 100
         elif blockHasMoved == 2:
             reward += 10
-        return reward
+        return reward - self.distanceToBox(environnement, new_state)
 
 
     def update(self, previous_state, state, last_action, environnement, blockHasMoved):
@@ -64,11 +64,14 @@ class Policy:
             reward += 100
         elif blockHasMoved == 2:
             reward += 10
+        reward -= self.distanceToBox(environnement, state)
         self.table[previous_state][last_action] += reward + self.learning_rate * (self.discount_factor * maxQ - self.table[previous_state][last_action])
         print("Reward: ", reward)
 
 
     def defineReward(self, environnement):
+        boxes = []
+        goals = []
         if environnement.win():
             return 10000
         if environnement.lose():
@@ -78,16 +81,37 @@ class Policy:
             for j in range(environnement.width(i)):
                 content = environnement.getContent(i, j)
                 if content == gameConstants.BOX:
+                    boxes.append((i,j))
                     availableActions = environnement.availableActions((i,j), True)
                     if len(availableActions) == 2:
                         reward -= 10
                     else:
                         reward -= 1 #TODO
                 elif content == gameConstants.BOX_ON_GOAL:
+                    boxes.append((i,j))
+                    goals.append((i,j))
                     reward += 100
                     availableActions = environnement.availableActions((i,j), True)
                     if len(availableActions) == 2:
                         reward -= 10
                     else:
                         reward -= 1 #TODO
+                elif content == gameConstants.GOAL:
+                    goals.append((i,j))
+        distanceForGoals = dict()
+        for i in range(len(boxes)):
+            distanceForGoals[boxes[i]] = dict()
+            for j in range(len(goals)):
+                distanceForGoals[boxes[i]][goals[j]] = abs(boxes[i][0] - goals[j][0] + boxes[i][1] - goals[j][1])
+        for (key, value) in distanceForGoals.items():
+            reward -= sum(value.values())
         return reward
+
+    def distanceToBox(self, environnement, state):
+        boxes = []
+        for i in range(environnement.height()):
+            for j in range(environnement.width(i)):
+                content = environnement.getContent(i, j)
+                if content == gameConstants.BOX or gameConstants.BOX_ON_GOAL:
+                    boxes.append((i,j))
+        return min(abs(boxes[i][0] - state[0]) + abs(boxes[i][1] - state[1]) for i in range(len(boxes)))
