@@ -18,7 +18,8 @@ class MainWindow(arcade.Window):
         self.started = False
         self.agent.environment.reset()
         self.agent.reset()
-        self.update_player()  
+        self.update_player()
+        print(self.agent.policy)
 
     def initSprites(self):
         self.walls = arcade.SpriteList()
