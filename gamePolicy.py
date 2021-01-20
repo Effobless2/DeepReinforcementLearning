@@ -1,16 +1,17 @@
 import gameConstants
 import copy
+import random
 
 DEFAULT_LEARNING_RATE, DEFAULT_DISCOUNT_FACTOR = 1, 0.8
 
 REWARDS = {
-    gameConstants.WALL           : -100000,
+    gameConstants.WALL           : -100,
     gameConstants.PLAYER         : -5,
     gameConstants.PLAYER_ON_GOAL : -5,
-    gameConstants.BOX            : -5,
-    gameConstants.BOX_ON_GOAL    : -10,
+    gameConstants.BOX            : +50,
+    gameConstants.BOX_ON_GOAL    : +100,
     gameConstants.GOAL           : -5,
-    gameConstants.FLOOR          : -5    
+    gameConstants.FLOOR          : -3
 }
 
 class Policy:
@@ -31,6 +32,16 @@ class Policy:
 
 
     def best_action(self, state, availableActions, environnement):
+        rand_target = {}
+        rand = random.randint(0,100)
+        nul_reward = []
+
+
+        for action in availableActions:
+            rand_target[action] = self.table[state][action]
+            if rand_target[action] == 0:
+                nul_reward.append(action)
+
         action = None
         reward = None
         for currentAction in self.table[state]:
@@ -40,34 +51,33 @@ class Policy:
                 if not action or currentReward > reward:
                     action = currentAction
                     reward = currentReward
+                    #reward = random.randint(-1.5,1.5)
+
+        if nul_reward != []:
+            piece = int(random.randint(0,1))
+            print("PIECE = ", str(piece))
+            if piece:
+                return nul_reward[0]
+            
+        print("REWARD: " + str(reward))
         return action
 
-    def preventReward(self, state, action, environnement):
-        template = copy.deepcopy(environnement)
-        new_state, blockHasMoved = template.apply(state, action)
-        reward = self.defineReward(template)
-        if blockHasMoved == 0:
-            reward -= 100
-        elif blockHasMoved == 1:
-            reward += 100
-        elif blockHasMoved == 2:
-            reward += 10
-        return reward - self.distanceToBox(environnement, new_state)
+    # def preventReward(self, state, action, environnement):
+    #     template = copy.deepcopy(environnement)
+    #     new_state, blockHasMoved = template.apply(state, action)
+    #     reward = self.defineReward(template)
+    #     if blockHasMoved == 0:
+    #         reward -= 1
+    #     elif blockHasMoved == 1:
+    #         reward += 10
+    #     elif blockHasMoved == 2:
+    #         reward += 100
+    #     return reward - self.distanceToBox(environnement, new_state)
 
 
-    def update(self, previous_state, state, last_action, environnement, blockHasMoved):
+    def update(self, previous_state, state, last_action, environnement, reward):
         maxQ = max(self.table[state].values())
-        reward = self.defineReward(environnement)
-        if blockHasMoved == 0:
-            reward -= 100
-        elif blockHasMoved == 1:
-            reward += 100
-        elif blockHasMoved == 2:
-            reward += 10
-        reward -= self.distanceToBox(environnement, state)
         self.table[previous_state][last_action] += reward + self.learning_rate * (self.discount_factor * maxQ - self.table[previous_state][last_action])
-        print("Reward: ", reward)
-
 
     def defineReward(self, environnement):
         boxes = []

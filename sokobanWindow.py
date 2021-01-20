@@ -19,7 +19,6 @@ class MainWindow(arcade.Window):
         self.agent.environment.reset()
         self.agent.reset()
         self.update_player()
-        print(self.agent.policy)
 
     def initSprites(self):
         self.walls = arcade.SpriteList()
@@ -59,18 +58,15 @@ class MainWindow(arcade.Window):
             self.reset()
         
     def on_update(self, delta_time):
+        print(self.agent.policy)
         if not self.started:
             self.started = True
             return
         input()
-        action = self.agent.best_action()
-        if action != None :
-            self.agent.do(action)
+        player_can_play = self.agent.do()
+        if player_can_play:
             self.update_player()
-        if self.agent.environment.lose():
-            self.reset()
-        elif self.agent.environment.win():
-            print("won")
+        else:
             self.reset()
 
     

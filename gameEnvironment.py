@@ -37,7 +37,6 @@ class Environment:
             result.append(gameConstants.RIGHT)
         return result
             
-
     def checkUpOK(self, state, fromBlock = False):
         new_state = (state[0] - 1, state[1])
         if new_state[0] < 0 :
@@ -52,7 +51,6 @@ class Environment:
                 return self.checkUpOK(new_state, True)
         return True
 
-    
     def checkDownOK(self, state, fromBlock = False):
         new_state = (state[0] + 1, state[1])
         if new_state[0] >= len(self.template) :
@@ -108,6 +106,7 @@ class Environment:
 
         elif action == gameConstants.RIGHT:
             new_state = (state[0], state[1] + 1)
+        state_content = self.states[new_state]
         if self.states[new_state] in [gameConstants.BOX, gameConstants.BOX_ON_GOAL]:
             if self.states[new_state] == gameConstants.BOX:
                 blockHasMoved = 1
@@ -117,7 +116,7 @@ class Environment:
                 
         if new_state in self.states:
             state = new_state
-        return state, blockHasMoved
+        return state, blockHasMoved, state_content
 
     def stateAfterMove(self, state, action):
         if action == gameConstants.UP:
@@ -137,6 +136,7 @@ class Environment:
                     availableActions = self.availableActions((i,j), True)
                     if len(availableActions) >= 2:
                         if not ((gameConstants.UP in availableActions and gameConstants.DOWN in availableActions) or (gameConstants.LEFT in availableActions and gameConstants.RIGHT in availableActions)):
+                            
                             return True
                     else:
                         return True
