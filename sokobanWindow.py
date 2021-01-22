@@ -68,6 +68,7 @@ class MainWindow(arcade.Window):
         player_can_play = self.agent.do()
         self.update_player()
         if self.agent.environment.win():
+            input()
         if not player_can_play:
             self.reset()
 
