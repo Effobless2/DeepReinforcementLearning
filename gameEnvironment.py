@@ -26,72 +26,76 @@ class Environment:
                     self.starting_point = (row, col)
 
     def availableActions(self, state, fromBlock = False):
-        result = []
-        if self.checkUpOK(state, fromBlock) :
-            result.append(gameConstants.UP)
-        if self.checkLeftOK(state, fromBlock) :
-            result.append(gameConstants.LEFT)
-        if self.checkDownOK(state, fromBlock) :
-            result.append(gameConstants.DOWN)
-        if self.checkRightOK(state, fromBlock) :
-            result.append(gameConstants.RIGHT)
+        result = {}
+        (up, blockMoved) = self.checkUpOK(state, fromBlock)
+        if up :
+            result[gameConstants.UP] = blockMoved
+        (left, blockMoved) = self.checkLeftOK(state, fromBlock)
+        if left :
+            result[gameConstants.LEFT] = blockMoved
+        (down, blockMoved) = self.checkDownOK(state, fromBlock)
+        if down :
+            result[gameConstants.DOWN] = blockMoved
+        (right, blockMoved) = self.checkRightOK(state, fromBlock)
+        if right :
+            result[gameConstants.RIGHT] = blockMoved
         return result
             
     def checkUpOK(self, state, fromBlock = False):
         new_state = (state[0] - 1, state[1])
         if new_state[0] < 0 :
-            return False
+            return (False, False)
         new_state_content = self.states[new_state]
         if new_state_content == gameConstants.WALL :
-            return False
+            return (False, False)
         if new_state_content == gameConstants.BOX or new_state_content == gameConstants.BOX_ON_GOAL :
             if fromBlock :
-                return False
+                return (False, False)
             else :
                 return self.checkUpOK(new_state, True)
-        return True
+        return (True, fromBlock)
 
     def checkDownOK(self, state, fromBlock = False):
         new_state = (state[0] + 1, state[1])
         if new_state[0] >= len(self.template) :
-            return False
+            return (False, False)
         new_state_content = self.states[new_state]
         if new_state_content == gameConstants.WALL :
-            return False
+            return (False, False)
         if new_state_content == gameConstants.BOX or new_state_content == gameConstants.BOX_ON_GOAL :
             if fromBlock :
-                return False
+                return (False, False)
             else :
                 return self.checkDownOK(new_state, True)
-        return True
+        return (True, fromBlock)
 
     def checkLeftOK(self, state, fromBlock = False):
         new_state = (state[0], state[1] - 1)
         if new_state[1] < 0 :
-            return False
+            return (False, False)
         new_state_content = self.states[new_state]
         if new_state_content == gameConstants.WALL :
-            return False
+            return (False, False)
         if new_state_content == gameConstants.BOX or new_state_content == gameConstants.BOX_ON_GOAL :
             if fromBlock :
-                return False
+                return (False, False)
             else :
                 return self.checkLeftOK(new_state, True)
-        return True
+        return (True, fromBlock)
 
     def checkRightOK(self, state, fromBlock = False):
         new_state = (state[0], state[1] + 1)
         if new_state[1] >= len(self.template[new_state[0]]) :
-            return False
+            return (False, False)
         new_state_content = self.states[new_state]
         if new_state_content == gameConstants.WALL :
-            return False
+            return (False, False)
         if new_state_content == gameConstants.BOX or new_state_content == gameConstants.BOX_ON_GOAL :
             if fromBlock :
-                return False
+                return (False, False)
             else :
                 return self.checkRightOK(new_state, True)
-        return True
+        return (True, fromBlock)
 
     def apply(self, state, action):
         blockHasMoved = 0
@@ -148,17 +152,27 @@ class Environment:
                 content = self.states[(i,j)]
                 if content == gameConstants.BOX:
                     return False
+                elif content == gameConstants.BOX_ON_GOAL:
+                    return True
         return True
+
+    def __repr__(self):
+        res = ""
+        for i in range(self.height()):
+            for j in range(self.width(i)):
+                res+= self.states[(i, j)]
+            res+= '\n'
+        return res
 
     def moveBlock(self, action, blockPos):
         if action == gameConstants.UP:
-            self.states[(blockPos[0]-1, blockPos[1])] = gameConstants.BOX if self.states[(blockPos[0]-1, blockPos[1])] == gameConstants.FLOOR else gameConstants.BOX_ON_GOAL
+            self.states[(blockPos[0]-1, blockPos[1])] = gameConstants.BOX if self.states[(blockPos[0]-1, blockPos[1])] == gameConstants.FLOOR or self.states[(blockPos[0]-1, blockPos[1])] == gameConstants.PLAYER else gameConstants.BOX_ON_GOAL
         elif action == gameConstants.DOWN:
-            self.states[(blockPos[0]+1, blockPos[1])] = gameConstants.BOX if self.states[(blockPos[0]+1, blockPos[1])] == gameConstants.FLOOR else gameConstants.BOX_ON_GOAL
+            self.states[(blockPos[0]+1, blockPos[1])] = gameConstants.BOX if self.states[(blockPos[0]+1, blockPos[1])] == gameConstants.FLOOR or self.states[(blockPos[0]+1, blockPos[1])] == gameConstants.PLAYER else gameConstants.BOX_ON_GOAL
         elif action == gameConstants.LEFT:
-            self.states[(blockPos[0], blockPos[1]-1)] = gameConstants.BOX if self.states[(blockPos[0], blockPos[1]-1)] == gameConstants.FLOOR else gameConstants.BOX_ON_GOAL
+            self.states[(blockPos[0], blockPos[1]-1)] = gameConstants.BOX if self.states[(blockPos[0], blockPos[1]-1)] == gameConstants.FLOOR or self.states[(blockPos[0], blockPos[1]-1)] == gameConstants.PLAYER else gameConstants.BOX_ON_GOAL
         elif action == gameConstants.RIGHT:
-            self.states[(blockPos[0], blockPos[1]+1)] = gameConstants.BOX if self.states[(blockPos[0], blockPos[1]+1)] == gameConstants.FLOOR else gameConstants.BOX_ON_GOAL
+            self.states[(blockPos[0], blockPos[1]+1)] = gameConstants.BOX if self.states[(blockPos[0], blockPos[1]+1)] == gameConstants.FLOOR or self.states[(blockPos[0], blockPos[1]+1)] == gameConstants.PLAYER else gameConstants.BOX_ON_GOAL
         if self.states[blockPos] == gameConstants.BOX_ON_GOAL:
             self.states[blockPos] = gameConstants.GOAL
         else:

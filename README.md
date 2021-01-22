@@ -1,4 +1,13 @@
 # DeepReinforcementLearning
+
+## Lancement
+- `python main.py [fichierDeSauvegarde]`
+- Si vous spécifiez un fichier de sauvegarde, ce dernier va recharger la table d'apprentissage contenue dans ce dernier, sinon il initialisera une nouvelle table d'apprentissage
+
+## Commandes
+- S permet de sauvegarder l'état de la table d'apprentissage à un instant donné. Elle sera alors sauvegardée dans le fichier 'sokobanTable.json'
+
+### Réflexions
 Cas de victoire :
     - Toutes les caisses doivent être sur une case de destination différente
 

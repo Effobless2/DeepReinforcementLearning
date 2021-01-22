@@ -1,5 +1,6 @@
 import arcade
 import gameConstants
+import json
 
 SPRITE_SIZE = 64
 
@@ -56,19 +57,34 @@ class MainWindow(arcade.Window):
     def on_key_release(self, key, modifiers):
         if key == arcade.key.C:
             self.reset()
+        elif key == arcade.key.S:
+            self.exportTable()
+
         
     def on_update(self, delta_time):
-        print(self.agent.policy)
         if not self.started:
             self.started = True
             return
-        input()
         player_can_play = self.agent.do()
-        if player_can_play:
-            self.update_player()
-        else:
+        self.update_player()
+        if self.agent.environment.win():
+        if not player_can_play:
             self.reset()
 
     
     def run(self):
         arcade.run()
+
+    def exportTable(self):
+        x = {}
+        x["learning_rate"] = self.agent.policy.learning_rate
+        x["discount_factor"] = self.agent.policy.discount_factor
+        x["table"] = {}
+        for (i,j) in self.agent.policy.table.keys():
+            x["table"]["("+str(i)+","+str(j)+")"] = self.agent.policy.table[(i,j)]
+
+        json_object = json.dumps(x, indent = 4)
+        print(json_object)
+        f = open("novobanTable.json", "w")
+        f.write(json_object)
+        f.close()
